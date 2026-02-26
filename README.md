@@ -1,6 +1,6 @@
 # openclaw-dispatch-skills
 
-Portable OpenClaw slash skills for Claude Code dispatch workflows:
+Portable OpenClaw slash skills for Claude Code dispatch workflows (self-contained, no dependency on local wrapper scripts):
 
 - `/dispatch <project> <task-name> <prompt...>` (headless async)
 - `/dispatchi <project> <task-name> <prompt...>` (interactive, for slash-only plugins like ralph-loop)
