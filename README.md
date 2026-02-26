@@ -115,6 +115,10 @@ Required secret:
 
 - `CLAWHUB_TOKEN`
 
+Publishing eligibility note:
+
+- ClawHub may require a minimum GitHub account age before publishing (current error observed: 14 days).
+
 Optional repo variables:
 
 - `CLAWHUB_SITE`
