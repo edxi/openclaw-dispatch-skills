@@ -12,7 +12,8 @@ These skills are designed for ClawHub publishing and cross-machine use.
 They avoid hardcoding a single local path and support local overrides via:
 
 1. environment variables
-2. optional env file (`~/.config/openclaw/dispatch.env`)
+2. optional env file (`<workspace>/skills/dispatch.env.local`)  
+   (legacy fallback: `~/.config/openclaw/dispatch.env`)
 3. OpenClaw `skills.entries.<skill>.env` injection
 
 ## Skill layout
@@ -24,12 +25,13 @@ They avoid hardcoding a single local path and support local overrides via:
 
 ## Local override file
 
-Copy example and edit:
+Copy example and edit (recommended in skills root):
 
 ```bash
-mkdir -p ~/.config/openclaw
-cp skills/dispatch.env.example ~/.config/openclaw/dispatch.env
+cp skills/dispatch.env.example /home/miniade/.openclaw/workspace-coder/skills/dispatch.env.local
 ```
+
+(or use your own workspace path)
 
 ## OpenClaw config-based env injection (recommended)
 

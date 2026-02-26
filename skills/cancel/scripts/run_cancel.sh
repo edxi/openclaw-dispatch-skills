@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ENV_FILE="${OPENCLAW_DISPATCH_ENV:-$HOME/.config/openclaw/dispatch.env}"
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SKILLS_ROOT="$(cd "$SKILL_DIR/.." && pwd)"
+ENV_FILE="${OPENCLAW_DISPATCH_ENV:-$SKILLS_ROOT/dispatch.env.local}"
+LEGACY_ENV_FILE="$HOME/.config/openclaw/dispatch.env"
 if [[ -f "$ENV_FILE" ]]; then
   # shellcheck disable=SC1090
   source "$ENV_FILE"
+elif [[ -f "$LEGACY_ENV_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$LEGACY_ENV_FILE"
 fi
 
 RESULTS_BASE="${RESULTS_BASE:-/home/miniade/clawd/data/claude-code-results}"

@@ -14,7 +14,7 @@ Run `{baseDir}/scripts/run_dispatchi.sh` with user args.
 
 ## Local config
 
-- optional env file: `${OPENCLAW_DISPATCH_ENV:-~/.config/openclaw/dispatch.env}`
+- optional env file: `${OPENCLAW_DISPATCH_ENV:-<workspace>/skills/dispatch.env.local}` (legacy fallback: `~/.config/openclaw/dispatch.env`)
 - supports OpenClaw `skills.entries.dispatchi.env` injection
 - script is self-contained (does not require local wrapper binaries)
 
