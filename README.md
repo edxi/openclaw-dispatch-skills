@@ -83,5 +83,7 @@ Output to `./dist`.
 ## Notes
 
 - These are **custom skill slash commands**, not OpenClaw built-in system commands.
-- `/dispatchi` defaults to `--max-iterations 20` and `--completion-promise "COMPLETE"`.
-- `/cancel` accepts `<run-id>` or `<project>/<run-id>`.
+- `/dispatch` enforces timeout via `DISPATCH_TIMEOUT_SEC` (default 7200s).
+- `/dispatch` does **not** force `--teammate-mode auto` by default (can be enabled via env).
+- `/dispatchi` defaults to `--max-iterations 20` and `--completion-promise "COMPLETE"`, then auto-exits session on completion.
+- `/cancel` accepts `<run-id>` or `<project>/<run-id>` and performs hard-cancel.
