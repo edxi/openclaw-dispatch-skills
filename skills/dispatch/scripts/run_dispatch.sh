@@ -12,6 +12,8 @@ LAUNCH_LOG_DIR="${LAUNCH_LOG_DIR:-$HOME/.openclaw/data/dispatch-launch}"
 DISPATCH_REPO="${DISPATCH_REPO:-$HOME/repos/claude-code-dispatch}"
 CC_DISPATCH_BIN="${CC_DISPATCH_BIN:-$(command -v cc-dispatch 2>/dev/null || echo "$HOME/.local/bin/cc-dispatch")}"
 DISPATCH_PERMISSION_MODE="${DISPATCH_PERMISSION_MODE:-bypassPermissions}"
+DISPATCH_TEAMMATE_MODE="${DISPATCH_TEAMMATE_MODE:-}"
+DISPATCH_TIMEOUT_SEC="${DISPATCH_TIMEOUT_SEC:-7200}"
 
 if [[ $# -lt 3 ]]; then
   echo "Usage: /dispatch <project> <task-name> <prompt...>" >&2
@@ -38,7 +40,10 @@ RUN_LOG="$LAUNCH_LOG_DIR/${RUN_ID}.log"
 if [[ -x "$CC_DISPATCH_BIN" ]]; then
   CMD=("$CC_DISPATCH_BIN" -n "$TASK_NAME" -w "$WORKDIR" -p "$PROMPT" --permission-mode "$DISPATCH_PERMISSION_MODE")
   if [[ "$NEED_TEAMS" -eq 1 ]]; then
-    CMD+=(--agent-teams --teammate-mode auto)
+    CMD+=(--agent-teams)
+    if [[ -n "$DISPATCH_TEAMMATE_MODE" ]]; then
+      CMD+=(--teammate-mode "$DISPATCH_TEAMMATE_MODE")
+    fi
   fi
 else
   DISPATCH_SH="$DISPATCH_REPO/scripts/dispatch.sh"
@@ -50,12 +55,17 @@ else
   RESULT_DIR="$RESULTS_BASE/$PROJECT/$RUN_ID"
   mkdir -p "$RESULT_DIR"
   export RESULT_DIR
+  export DISPATCH_TIMEOUT_SEC
   CMD=(bash "$DISPATCH_SH" -n "$TASK_NAME" -w "$WORKDIR" -p "$PROMPT" --permission-mode "$DISPATCH_PERMISSION_MODE")
   if [[ "$NEED_TEAMS" -eq 1 ]]; then
-    CMD+=(--agent-teams --teammate-mode auto)
+    CMD+=(--agent-teams)
+    if [[ -n "$DISPATCH_TEAMMATE_MODE" ]]; then
+      CMD+=(--teammate-mode "$DISPATCH_TEAMMATE_MODE")
+    fi
   fi
 fi
 
+export DISPATCH_TIMEOUT_SEC
 nohup "${CMD[@]}" >"$RUN_LOG" 2>&1 &
 PID=$!
 

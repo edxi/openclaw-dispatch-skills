@@ -10,6 +10,7 @@ Run `{baseDir}/scripts/run_dispatch.sh` with user args.
 - Format: `/dispatch <project> <task-name> <prompt...>`
 - Workdir mapping: `${REPOS_ROOT:-$HOME/repos}/<project>`
 - Agent Teams policy: on-demand (enabled only if prompt contains Agent Team signals)
+- Safety: headless runs enforce timeout via `DISPATCH_TIMEOUT_SEC` (default 7200s)
 
 ## Local config
 

@@ -10,6 +10,7 @@ Run `{baseDir}/scripts/run_dispatchi.sh` with user args.
 - Format: `/dispatchi <project> <task-name> <prompt...>`
 - Workdir mapping: `${REPOS_ROOT:-$HOME/repos}/<project>`
 - Defaults: `max-iterations=20`, `completion-promise=COMPLETE`
+- Auto-exit: when completion promise appears, wrapper requests `/exit` and closes tmux session.
 
 ## Local config
 

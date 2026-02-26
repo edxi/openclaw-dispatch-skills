@@ -19,4 +19,5 @@ Run `{baseDir}/scripts/run_cancel.sh` with user args.
 
 1. Resolve run-id to exactly one result directory.
 2. Send `/ralph-loop:cancel-ralph` to that tmux session.
+3. Perform hard-cancel by requesting `/exit` and killing tmux session.
 3. Return success or precise error.
