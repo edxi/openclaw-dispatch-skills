@@ -1,6 +1,6 @@
 ---
 name: dispatch
-description: Launch non-blocking Claude Code headless tasks from slash command dispatch. Use when user requests async coding jobs with completion callback routing and does not require slash-only Claude plugins.
+description: Launch non-blocking Claude Code headless tasks from slash command dispatch. Use when user requests async coding jobs and does not require slash-only Claude plugins.
 ---
 
 Run `{baseDir}/scripts/run_dispatch.sh` with user args.
@@ -8,15 +8,22 @@ Run `{baseDir}/scripts/run_dispatch.sh` with user args.
 ## Contract
 
 - Format: `/dispatch <project> <task-name> <prompt...>`
-- Workdir mapping: `${REPOS_ROOT:-$HOME/repos}/<project>`
+- Workdir mapping: `${REPOS_ROOT:-/home/miniade/repos}/<project>`
 - Agent Teams policy: on-demand (enabled only if prompt contains Agent Team signals)
 - Safety: headless runs enforce timeout via `DISPATCH_TIMEOUT_SEC` (default 7200s)
 
 ## Local config
 
-- optional env file: `${OPENCLAW_DISPATCH_ENV:-<workspace>/skills/dispatch.env.local}` (legacy fallback: `~/.config/openclaw/dispatch.env`)
+- optional env file: `${OPENCLAW_DISPATCH_ENV:-<workspace>/skills/dispatch.env.local}`
 - supports OpenClaw `skills.entries.dispatch.env` injection
-- script is self-contained (does not require local wrapper binaries)
+- script is self-contained (bundled `dispatch.sh` + `claude_code_run.py`)
+
+## Security disclosure
+
+- Reads only allowlisted env keys from `dispatch.env.local` using key=value parsing (no `source`).
+- Starts a background local process (`nohup`) and writes logs/results under configured paths.
+- Network callback is **disabled by default**; enable only with `ENABLE_CALLBACK=1` and explicit group settings.
+- Does not download remote code at runtime.
 
 ## Behavior
 

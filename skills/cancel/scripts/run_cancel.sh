@@ -4,14 +4,34 @@ set -euo pipefail
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILLS_ROOT="$(cd "$SKILL_DIR/.." && pwd)"
 ENV_FILE="${OPENCLAW_DISPATCH_ENV:-$SKILLS_ROOT/dispatch.env.local}"
-LEGACY_ENV_FILE="$HOME/.config/openclaw/dispatch.env"
-if [[ -f "$ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$ENV_FILE"
-elif [[ -f "$LEGACY_ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
-  source "$LEGACY_ENV_FILE"
-fi
+
+ALLOWED_KEYS=(RESULTS_BASE TMUX_SOCKET_DIR)
+
+load_env_file() {
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "${line//[[:space:]]/}" ]] && continue
+    [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] || continue
+
+    local key="${line%%=*}"
+    local val="${line#*=}"
+    key="$(echo "$key" | tr -d '[:space:]')"
+    val="${val#"${val%%[![:space:]]*}"}"
+
+    if [[ "$val" =~ ^\".*\"$ ]]; then val="${val:1:-1}"; fi
+    if [[ "$val" =~ ^\'.*\'$ ]]; then val="${val:1:-1}"; fi
+
+    case " ${ALLOWED_KEYS[*]} " in
+      *" $key "*) export "$key=$val" ;;
+      *) ;;
+    esac
+  done < "$file"
+}
+
+load_env_file "$ENV_FILE"
 
 RESULTS_BASE="${RESULTS_BASE:-/home/miniade/clawd/data/claude-code-results}"
 SOCKET_DIR="${TMUX_SOCKET_DIR:-/tmp/clawdbot-tmux-sockets}"

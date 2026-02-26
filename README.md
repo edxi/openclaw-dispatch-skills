@@ -1,20 +1,20 @@
 # openclaw-dispatch-skills
 
-Portable OpenClaw slash skills for Claude Code dispatch workflows (self-contained, no dependency on local wrapper scripts):
+Portable OpenClaw slash skills for Claude Code dispatch workflows:
 
 - `/dispatch <project> <task-name> <prompt...>` (headless async)
 - `/dispatchi <project> <task-name> <prompt...>` (interactive, for slash-only plugins like ralph-loop)
 - `/cancel <run-id>` (cancel a running interactive loop)
 
-## Why this repo
+## Security posture (low-VT profile)
 
-These skills are designed for ClawHub publishing and cross-machine use.
-They avoid hardcoding a single local path and support local overrides via:
+This repo ships self-contained skill scripts and avoids runtime execution of external repo scripts.
 
-1. environment variables
-2. optional env file (`<workspace>/skills/dispatch.env.local`)  
-   (legacy fallback: `~/.config/openclaw/dispatch.env`)
-3. OpenClaw `skills.entries.<skill>.env` injection
+- No runtime remote downloads.
+- No `source` of env files; only allowlisted `KEY=VALUE` parsing.
+- Callback/network routing is **off by default** (`ENABLE_CALLBACK=0`).
+- Headless runs use timeout guard (`DISPATCH_TIMEOUT_SEC`, default 7200s).
+- `dispatchi` validates tmux session startup and auto-exits on completion.
 
 ## Skill layout
 
@@ -23,56 +23,25 @@ They avoid hardcoding a single local path and support local overrides via:
 - `skills/cancel`
 - `skills/dispatch.env.example`
 
-## Local override file
+## Local config
 
-Copy example and edit (recommended in skills root):
+Default config path used by scripts:
+
+- `<workspace>/skills/dispatch.env.local`
+
+Create from template:
 
 ```bash
 cp skills/dispatch.env.example /home/miniade/.openclaw/workspace-coder/skills/dispatch.env.local
 ```
 
-(or use your own workspace path)
-
-## OpenClaw config-based env injection (recommended)
-
-In `~/.openclaw/openclaw.json`:
-
-```json5
-{
-  skills: {
-    entries: {
-      dispatch: {
-        env: {
-          REPOS_ROOT: "/home/miniade/repos",
-          LAUNCH_LOG_DIR: "/home/miniade/clawd/data/dispatch-launch"
-        }
-      },
-      dispatchi: {
-        env: {
-          REPOS_ROOT: "/home/miniade/repos",
-          DISPATCHI_MAX_ITERATIONS: "20",
-          DISPATCHI_COMPLETION_PROMISE: "COMPLETE"
-        }
-      },
-      cancel: {
-        env: {
-          RESULTS_BASE: "/home/miniade/clawd/data/claude-code-results"
-        }
-      }
-    }
-  }
-}
-```
-
 ## Install into workspace skills
-
-OpenClaw loads workspace skills from `<workspace>/skills` and picks up changes on the next session.
-
-For this coder agent workspace:
 
 ```bash
 ./scripts/sync-to-workspace.sh /home/miniade/.openclaw/workspace-coder/skills
 ```
+
+OpenClaw loads workspace skills from `<workspace>/skills` on next session.
 
 ## Package `.skill` files
 
@@ -117,12 +86,7 @@ Required secret:
 
 Publishing eligibility note:
 
-- ClawHub may require a minimum GitHub account age before publishing (current error observed: 14 days).
-
-Optional repo variables:
-
-- `CLAWHUB_SITE`
-- `CLAWHUB_REGISTRY`
+- ClawHub may require a minimum GitHub account age before publishing (observed: 14 days).
 
 Trigger manually with inputs:
 
@@ -131,11 +95,3 @@ Trigger manually with inputs:
 - `tags` (default `latest`)
 - `changelog`
 - `dry_run`
-
-## Notes
-
-- These are **custom skill slash commands**, not OpenClaw built-in system commands.
-- `/dispatch` enforces timeout via `DISPATCH_TIMEOUT_SEC` (default 7200s).
-- `/dispatch` does **not** force `--teammate-mode auto` by default (can be enabled via env).
-- `/dispatchi` defaults to `--max-iterations 20` and `--completion-promise "COMPLETE"`, then auto-exits session on completion.
-- `/cancel` accepts `<run-id>` or `<project>/<run-id>` and performs hard-cancel.
