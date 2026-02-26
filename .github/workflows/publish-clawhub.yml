@@ -1,6 +1,6 @@
 name: Publish skills to ClawHub
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       version:
